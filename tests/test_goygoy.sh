@@ -39,7 +39,7 @@ EOF
   done
   export PATH="$T/bin:$ORIG_PATH"
   export XDG_CONFIG_HOME="$T/config"
-  unset GOYGOY_MODE FAKE_SLEEP FAKE_NO_YELDA
+  unset GOYGOY_MODE GOYGOY_HEADLESS CLAUDE_CODE_ENTRYPOINT FAKE_SLEEP FAKE_NO_YELDA
 }
 
 teardown() { rm -rf "$T"; }
@@ -236,6 +236,43 @@ setup
 hook UserPromptSubmit
 check "missing memes.json: exits 0" test "$CODE" -eq 0
 check "missing memes.json: prints nothing" test -z "$OUT"
+teardown
+
+# Headless runs (claude -p, Agent SDK) are scripts: stay out of their output and keep quiet
+setup
+memes "$FIXTURE"
+mode text >/dev/null
+export CLAUDE_CODE_ENTRYPOINT=sdk-cli
+hook UserPromptSubmit
+check "headless: text mode adds nothing to claude -p output" test -z "$OUT"
+teardown
+
+setup
+memes "$FIXTURE"
+: > "$P/sounds/clip.mp3"
+export CLAUDE_CODE_ENTRYPOINT=sdk-cli
+hook UserPromptSubmit
+sleep 0.3
+check "headless: sound mode plays nothing" test ! -s "$LOG"
+teardown
+
+setup
+memes "$FIXTURE"
+mode text >/dev/null
+export CLAUDE_CODE_ENTRYPOINT=sdk-cli GOYGOY_HEADLESS=1
+hook UserPromptSubmit
+check "headless: GOYGOY_HEADLESS=1 opts back in" \
+  json_true '.hookSpecificOutput.hookEventName == "UserPromptSubmit"' <<<"$OUT"
+teardown
+
+setup
+memes "$FIXTURE"
+: > "$P/sounds/clip.mp3"
+export CLAUDE_CODE_ENTRYPOINT=cli
+hook UserPromptSubmit
+wait_for_log 1
+check "interactive (entrypoint cli): still plays the clip" \
+  grep -qxF "afplay $P/sounds/clip.mp3" "$LOG"
 teardown
 
 check "shipped memes.json: UserPromptSubmit has the başımla meme" \

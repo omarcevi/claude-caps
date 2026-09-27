@@ -7,6 +7,11 @@
 exec 2>/dev/null
 cat >/dev/null # drain the hook payload; unused in v1
 
+# Headless runs (claude -p, Agent SDK) are scripts: stay out of their output and keep quiet.
+case "${CLAUDE_CODE_ENTRYPOINT:-}" in
+  sdk-*) [ "${GOYGOY_HEADLESS:-}" = 1 ] || exit 0 ;;
+esac
+
 event="${1:-}"
 root="$(cd "$(dirname "$0")/.." && pwd)" || exit 0
 source "$root/scripts/lib.sh" || exit 0
