@@ -23,6 +23,7 @@ Claude starts working with no noticeable delay, and a broken meme setup never br
 | Commands | `/goygoy:sus` ("shut up" → text mode), `/goygoy:konus` ("talk" → sound mode); ASCII names only |
 | Default mode | `sound` |
 | Modes | Exclusive: `sound` plays audio only; `text` makes Claude say it only |
+| Headless runs | `claude -p` / Agent SDK (`CLAUDE_CODE_ENTRYPOINT=sdk-*`) are skipped unless `GOYGOY_HEADLESS=1` (added after final review) |
 
 ## Layout
 
@@ -117,8 +118,11 @@ Then a live check: `claude --plugin-dir .` and submit a prompt in each mode.
 /plugin marketplace add ~/Documents/Programming/claude_caps
 /plugin install goygoy@claude-caps
 ```
-Drop the clip at `sounds/basimla-beraber-abi.mp3`. Mute with `/goygoy:sus`, unmute with `/goygoy:konus`.
-After editing hooks or the registry, run `/reload-plugins` (or restart the session).
+Drop the clip at `sounds/basimla-beraber-abi.mp3` **before installing**. Mute with `/goygoy:sus`, unmute with `/goygoy:konus`.
+Installing copies the plugin to `~/.claude/plugins/cache/claude-caps/goygoy/<version>/`, and updates are
+gated on `version`: after editing hooks, the registry or clips, bump `version` in `plugin.json`, run
+`/plugin marketplace update claude-caps` and `/plugin update goygoy@claude-caps`, then restart Claude Code.
+(Verified 2026-09-27 on Claude Code 2.1.283; the original `/reload-plugins` note was wrong for marketplace installs.)
 
 ## Out of scope for v1
 
