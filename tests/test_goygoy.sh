@@ -243,6 +243,22 @@ check "shipped memes.json: UserPromptSubmit has the başımla meme" \
     '.UserPromptSubmit | any(.phrase == $p and .sound == "basimla-beraber-abi.mp3")' \
     "$ROOT/memes.json"
 
+# --- plugin wiring ------------------------------------------------------------
+
+check "wiring: hooks.json registers goygoy.sh for UserPromptSubmit" \
+  json_true '.hooks.UserPromptSubmit[0].hooks[0].command
+             == "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/goygoy.sh\" UserPromptSubmit"' \
+    "$ROOT/hooks/hooks.json"
+check "wiring: every hooked event has memes" \
+  json_true -n --slurpfile h "$ROOT/hooks/hooks.json" --slurpfile m "$ROOT/memes.json" \
+    '(($h[0].hooks | keys) - ($m[0] | keys)) == []'
+check "wiring: mode.sh is executable (slash commands run it directly)" \
+  test -x "$ROOT/scripts/mode.sh"
+check "wiring: /goygoy:sus switches to text" \
+  grep -qF '"${CLAUDE_PLUGIN_ROOT}/scripts/mode.sh" text' "$ROOT/commands/sus.md"
+check "wiring: /goygoy:konus switches to sound" \
+  grep -qF '"${CLAUDE_PLUGIN_ROOT}/scripts/mode.sh" sound' "$ROOT/commands/konus.md"
+
 # --- summary ------------------------------------------------------------------
 echo
 echo "$PASS passed, $FAIL failed"

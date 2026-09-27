@@ -1,0 +1,12 @@
+{
+  "name": "claude-caps",
+  "description": "Claude Code caps (Turkish memes) — sounds and catchphrases for Claude Code events",
+  "owner": { "name": "Omar Elcircevi" },
+  "plugins": [
+    {
+      "name": "goygoy",
+      "source": "./",
+      "description": "Turkish meme reactions for Claude Code. Başımla beraber abi! 🫡"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "goygoy",
+  "version": "0.1.0",
+  "description": "Turkish meme reactions for Claude Code. Başımla beraber abi! 🫡",
+  "author": { "name": "Omar Elcircevi" },
+  "keywords": ["meme", "sound", "turkish", "fun", "hooks"]
+}
